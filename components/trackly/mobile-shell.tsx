@@ -12,6 +12,7 @@ import {
   type LucideIcon
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import SupportPopup from "@/components/support-popup"
 
 const NAV_ITEMS = [
   {
@@ -53,6 +54,7 @@ export function MobileShell({ children }: MobileShellProps) {
         <div className="mx-auto flex w-full max-w-xl flex-col gap-6">{children}</div>
       </main>
       <BottomNavigation />
+      <SupportPopup />
     </div>
   )
 }
