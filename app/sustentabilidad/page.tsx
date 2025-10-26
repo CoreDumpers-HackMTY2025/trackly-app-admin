@@ -264,11 +264,11 @@ function KPICard({
     trend === "up"
       ? "text-green-600 dark:text-green-400"
       : trend === "down"
-        ? "text-red-600 dark:text-red-400"
+        ? "text-destructive"
         : "text-muted-foreground"
 
   return (
-    <Card className="border-2 hover:border-accent/50 transition-colors">
+    <Card className="border-2 hover:border-primary/50 transition-colors">
       <CardHeader>
         <CardTitle className="text-lg">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

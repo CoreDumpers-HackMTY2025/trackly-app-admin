@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from 'react'
-import { useAuth } from '@/components/auth-provider'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase-client'
+import Link from 'next/link'
+import { useAuth } from '@/components/auth-provider'
+import { LogIn, ShieldCheck, Flame, Target } from 'lucide-react'
 
 export default function LoginPage() {
   const { signIn } = useAuth()
@@ -37,10 +39,15 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background p-6 md:p-10 flex items-center justify-center">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Iniciar sesión</CardTitle>
+    <main className="relative min-h-screen bg-gradient-to-b from-rose-50 to-background dark:from-rose-950/20 p-6 md:p-10 flex items-center justify-center">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,var(--primary),transparent_60%)] dark:bg-[radial-gradient(ellipse_at_top,var(--primary),transparent_60%)]" />
+      <Card className="w-full max-w-md border-2 ring-1 ring-destructive/25 shadow-lg hover:shadow-xl transition-shadow">
+        <CardHeader className="space-y-1">
+          <CardTitle className="flex items-center gap-2 text-2xl font-bold text-destructive">
+            <LogIn className="h-5 w-5" aria-hidden="true" />
+            Ingresar
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">Accede para explorar mapas y misiones con estilo.</p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={onSubmit}>
@@ -53,10 +60,29 @@ export default function LoginPage() {
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full">
+            <Button type="submit" disabled={loading} className="w-full gap-2" variant="destructive">
               {loading ? 'Ingresando…' : 'Ingresar'}
+              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
             </Button>
           </form>
+          <div className="mt-6 grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5 rounded-lg bg-muted/40 px-2 py-1">
+              <Flame className="h-3 w-3 text-destructive" aria-hidden="true" />
+              <span>Rápido</span>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-lg bg-muted/40 px-2 py-1">
+              <Target className="h-3 w-3 text-destructive" aria-hidden="true" />
+              <span>Preciso</span>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-lg bg-muted/40 px-2 py-1">
+              <ShieldCheck className="h-3 w-3 text-destructive" aria-hidden="true" />
+              <span>Seguro</span>
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            ¿No tienes cuenta?{' '}
+            <Link href="/registro" className="font-medium text-destructive underline-offset-4 hover:underline">Crear cuenta</Link>
+          </p>
         </CardContent>
       </Card>
     </main>

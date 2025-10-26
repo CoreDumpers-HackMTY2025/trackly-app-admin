@@ -8,6 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { useEffect, useState } from "react"
+import { useAuth } from "@/components/auth-provider"
+import { apiGet, apiPost } from "@/lib/api"
+import { useToast } from "@/components/ui/use-toast"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const dailyMissions = [
   {
@@ -40,6 +45,55 @@ const weeklyMission = {
 }
 
 export default function TracklyMissionsPage() {
+  const { session } = useAuth()
+  const [missions, setMissions] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [progressList, setProgressList] = useState<any[]>([])
+  const { toast } = useToast()
+
+  useEffect(() => {
+    const run = async () => {
+      if (!session) return
+      try {
+        setLoading(true)
+        const data = await apiGet(`/api/missions/list`, session.access_token)
+        const arr = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : []
+        setMissions(arr)
+      } catch (e) {
+        console.warn("No se pudo cargar misiones", e)
+      } finally {
+        setLoading(false)
+      }
+    }
+    run()
+  }, [session])
+
+  useEffect(() => {
+    const runProgress = async () => {
+      if (!session) return
+      try {
+        const hist = await apiGet(`/api/missions/progress`, session.access_token)
+        const arr = Array.isArray(hist?.data) ? hist.data : Array.isArray(hist) ? hist : []
+        setProgressList(arr)
+      } catch (e) {
+        console.warn("No se pudo cargar historial de misiones", e)
+      }
+    }
+    runProgress()
+  }, [session])
+
+  const handleComplete = async (missionId: number | string) => {
+    if (!session) return
+    try {
+      const res = await apiPost(`/api/missions/complete`, { mission_id: missionId }, session.access_token)
+      setMissions((prev) => prev.map((m) => (m.id === missionId ? { ...m, progreso: "completed" } : m)))
+      toast({ title: "Misión completada", description: `Has ganado XP por la misión ${missionId}.` })
+    } catch (e) {
+      console.error("Error al completar misión", e)
+      toast({ variant: "destructive", title: "No se pudo completar", description: "Intenta nuevamente." })
+    }
+  }
+
   return (
     <section className="space-y-6">
       <header className="space-y-1">
@@ -113,37 +167,72 @@ export default function TracklyMissionsPage() {
             <Link href="/trackly/misiones?filter=daily">Ver historial</Link>
           </Button>
         </div>
-        <div className="grid gap-3">
-          {dailyMissions.map((mission) => (
-            <Card key={mission.id} className="border-border/70">
-              <CardContent className="space-y-3 px-4 py-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-border/40 text-[10px] uppercase tracking-wide">
-                        {mission.category}
-                      </Badge>
-                      <Badge variant="secondary">{mission.reward} XP</Badge>
+        {loading ? (
+          <div className="grid gap-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {(missions.length > 0 ? missions : dailyMissions).map((mission: any) => {
+              const id = mission.id
+              const title = mission.title ?? mission.nombre ?? mission.name ?? "Misión"
+              const description = mission.description ?? mission.descripcion ?? mission.desc ?? ""
+              const reward = mission.reward ?? mission.recompensa ?? 0
+              const progress = mission.progress ?? (mission.progreso === "completed" ? 100 : 0)
+              const category = mission.category ?? mission.categoria ?? "General"
+              const isCompleted = progress >= 100
+              return (
+                <Card key={id} className="border-border/70">
+                  <CardContent className="space-y-3 px-4 py-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="border-border/40 text-[10px] uppercase tracking-wide">
+                            {category}
+                          </Badge>
+                          <Badge variant="secondary">{reward} XP</Badge>
+                        </div>
+                        <h3 className="text-sm font-semibold leading-tight">{title}</h3>
+                        <p className="text-xs text-muted-foreground">{description}</p>
+                      </div>
+                      <Button size="sm" className="gap-1" onClick={() => handleComplete(id)} disabled={isCompleted}>
+                        <Target className="h-4 w-4" aria-hidden="true" />
+                        {isCompleted ? "Completada" : "Abrir misión"}
+                      </Button>
                     </div>
-                    <h3 className="text-sm font-semibold leading-tight">{mission.title}</h3>
-                    <p className="text-xs text-muted-foreground">{mission.description}</p>
-                  </div>
-                  <Button size="sm" className="gap-1">
-                    <Target className="h-4 w-4" aria-hidden="true" />
-                    Abrir misión
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Progreso</span>
-                    <span>{mission.progress}%</span>
-                  </div>
-                  <Progress value={mission.progress} className="h-2" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Progreso</span>
+                        <span>{progress}%</span>
+                      </div>
+                      <Progress value={progress} className="h-2" />
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Historial de misiones */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Historial</h2>
+        {progressList.length > 0 ? (
+          progressList.map((m: any) => (
+            <div key={`${m.mission_id}-${m.fecha ?? m.updated_at ?? m.created_at ?? Math.random()}`} className="flex items-center justify-between rounded-xl border px-4 py-3">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">Misión #{m.mission_id}</p>
+                <p className="text-xs text-muted-foreground">{m.progreso ?? m.status ?? "completed"} · {new Date(m.fecha ?? Date.now()).toLocaleString()}</p>
+              </div>
+              <Badge variant="secondary">{m.recompensa ?? m.reward ?? 0} XP</Badge>
+            </div>
+          ))
+        ) : (
+          <p className="text-xs text-muted-foreground">Aún no tienes misiones registradas.</p>
+        )}
       </section>
     </section>
   )

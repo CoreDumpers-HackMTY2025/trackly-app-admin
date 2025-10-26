@@ -289,7 +289,7 @@ function KPICard({
     trend === "up"
       ? "text-green-600 dark:text-green-400"
       : trend === "down"
-        ? "text-red-600 dark:text-red-400"
+        ? "text-destructive"
         : "text-muted-foreground"
 
   return (

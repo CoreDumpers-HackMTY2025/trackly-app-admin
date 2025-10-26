@@ -50,7 +50,7 @@ const layers = [
     name: "Seguridad",
     description: "Reportes de incidentes recientes",
     active: false,
-    color: "bg-rose-100 text-rose-600",
+    color: "bg-destructive/10 text-destructive",
   },
 ]
 
@@ -152,7 +152,7 @@ export default function TracklyMapPage() {
               key={alert.title}
               className="flex flex-col gap-3 rounded-xl border border-border/60 bg-background px-4 py-3 sm:flex-row sm:items-start"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-rose-600 self-start sm:self-center">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-destructive/10 text-destructive self-start sm:self-center">
                 <AlertTriangle className="h-5 w-5" aria-hidden="true" />
               </span>
               <div className="w-full flex-1 space-y-1">

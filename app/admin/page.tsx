@@ -39,7 +39,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Actividades Comerciales */}
-          <Card className="border-2 hover:border-secondary/50 transition-colors">
+          <Card className="border-2 hover:border-primary/50 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="text-2xl font-bold text-secondary">Actividades Comerciales</CardTitle>
               <Link href="/comercial">
@@ -57,7 +57,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Sustentable y Uso Responsable */}
-          <Card className="border-2 hover:border-accent/50 transition-colors">
+          <Card className="border-2 hover:border-primary/50 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="text-2xl font-bold text-accent">Sustentable y Uso Responsable</CardTitle>
               <Link href="/sustentabilidad">
@@ -109,7 +109,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Analytic ROI - Full Width */}
-          <Card className="border-2 hover:border-secondary/50 transition-colors md:col-span-2">
+          <Card className="border-2 hover:border-primary/50 transition-colors md:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="text-2xl font-bold text-secondary">Analytic ROI</CardTitle>
               <Link href="/analytic-roi">
@@ -148,7 +148,7 @@ function KPIItem({
     trend === "up"
       ? "text-green-600 dark:text-green-400"
       : trend === "down"
-        ? "text-red-600 dark:text-red-400"
+        ? "text-destructive"
         : "text-muted-foreground"
 
   return (
