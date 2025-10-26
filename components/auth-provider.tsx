@@ -4,9 +4,10 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase-client'
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import { Lock } from 'lucide-react'
 
 interface AuthContextValue {
   session: Session | null
@@ -76,6 +77,52 @@ export function useAuth() {
   const ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth must be used within AuthProvider')
   return ctx
+}
+
+export function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { loading, session } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="grid min-h-[60vh] place-items-center">
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (!session) {
+    return (
+      <div className="grid min-h-[70vh] place-items-center px-4">
+        <Card className="w-full max-w-lg rounded-2xl border-border/60 shadow-sm">
+          <CardHeader className="space-y-2">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Lock className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <CardTitle className="text-lg">Autenticación requerida</CardTitle>
+                <CardDescription>
+                  Para continuar en Trackly, inicia sesión o crea tu cuenta.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Button asChild className="flex-1">
+                <Link href="/login">Iniciar sesión</Link>
+              </Button>
+              <Button asChild variant="outline" className="flex-1">
+                <Link href="/registro">Registrarme</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return <>{children}</>
 }
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {

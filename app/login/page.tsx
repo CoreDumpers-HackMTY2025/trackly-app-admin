@@ -39,52 +39,40 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-rose-50 to-background dark:from-rose-950/20 p-6 md:p-10 flex items-center justify-center">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,var(--primary),transparent_60%)] dark:bg-[radial-gradient(ellipse_at_top,var(--primary),transparent_60%)]" />
-      <Card className="w-full max-w-md border-2 ring-1 ring-destructive/25 shadow-lg hover:shadow-xl transition-shadow">
-        <CardHeader className="space-y-1">
-          <CardTitle className="flex items-center gap-2 text-2xl font-bold text-destructive">
-            <LogIn className="h-5 w-5" aria-hidden="true" />
-            Ingresar
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">Accede para explorar mapas y misiones con estilo.</p>
+    <section className="mx-auto max-w-md px-4 py-10 space-y-6">
+      <header className="space-y-1 text-center">
+        <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Trackly</p>
+        <h1 className="text-2xl font-semibold">Ingresar a tu cuenta</h1>
+        <p className="text-sm text-muted-foreground">Accede a tu radar urbano y continua tu progreso.</p>
+      </header>
+      <Card className="bg-muted/40">
+        <CardHeader>
+          <CardTitle>Iniciar sesión</CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Email</label>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Contraseña</label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full gap-2" variant="destructive">
+          <form onSubmit={onSubmit} className="space-y-3">
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Correo electrónico"
+            />
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+            />
+            {error && <p className="text-xs text-destructive">{error}</p>}
+            <Button type="submit" disabled={loading} className="w-full">
               {loading ? 'Ingresando…' : 'Ingresar'}
-              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
             </Button>
           </form>
-          <div className="mt-6 grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1.5 rounded-lg bg-muted/40 px-2 py-1">
-              <Flame className="h-3 w-3 text-destructive" aria-hidden="true" />
-              <span>Rápido</span>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-lg bg-muted/40 px-2 py-1">
-              <Target className="h-3 w-3 text-destructive" aria-hidden="true" />
-              <span>Preciso</span>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-lg bg-muted/40 px-2 py-1">
-              <ShieldCheck className="h-3 w-3 text-destructive" aria-hidden="true" />
-              <span>Seguro</span>
-            </div>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            ¿No tienes cuenta?{' '}
-            <Link href="/registro" className="font-medium text-destructive underline-offset-4 hover:underline">Crear cuenta</Link>
-          </p>
         </CardContent>
       </Card>
-    </main>
+      <div className="text-center text-xs text-muted-foreground">
+        ¿Aún no tienes cuenta? <Link href="/registro" className="underline">Regístrate</Link>
+      </div>
+    </section>
   )
 }

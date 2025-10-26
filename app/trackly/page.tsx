@@ -8,7 +8,7 @@ import { ChevronRight, Crown, Flame, MapPin, Plus, Sparkles, Target, Users } fro
 import { useAuth } from "@/components/auth-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
@@ -24,14 +24,14 @@ function QuickAction({ href, icon: Icon, label, description }: QuickActionProps)
   return (
     <Link
       href={href}
-      className="group flex items-start gap-3 rounded-2xl border border-border/60 bg-card p-4 transition hover:border-primary/50 hover:shadow-md"
+      className="group flex w-full min-w-0 items-start gap-3 rounded-2xl border border-border/60 bg-card p-4 transition hover:border-primary/50 hover:shadow-md"
     >
       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
-      <div className="flex flex-1 flex-col gap-1">
-        <span className="text-sm font-semibold leading-none">{label}</span>
-        <span className="text-xs text-muted-foreground">{description}</span>
+      <div className="flex flex-1 min-w-0 flex-col gap-1">
+        <span className="text-sm font-semibold leading-none truncate">{label}</span>
+        <span className="text-xs text-muted-foreground break-words">{description}</span>
       </div>
       <ChevronRight className="mt-1 h-4 w-4 text-muted-foreground transition group-hover:text-primary" aria-hidden="true" />
     </Link>
@@ -129,52 +129,76 @@ export default function TracklyHomePage() {
               Sigue optimizando tu zona. Tenemos nuevas oportunidades esperando.
             </p>
           </div>
-          <div className="space-y-2">
+        </div>
+      </header>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base font-semibold">Acciones rápidas</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Completa misiones diarias, registra hotspots o comparte insights con tu comunidad.
+            </p>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <QuickAction
+              href="/trackly/misiones"
+              icon={Target}
+              label="Misiones activas"
+              description="Completa retos y gana XP"
+            />
+            <QuickAction
+              href="/trackly/mapa"
+              icon={MapPin}
+              label="Explorar mapa"
+              description="Nuevos hotspots en base a tus intereses"
+            />
+            <QuickAction
+              href="/trackly/comunidad"
+              icon={Users}
+              label="Comunidad"
+              description="Únete a la conversación local"
+            />
+            <QuickAction
+              href="/trackly/recompensas"
+              icon={Crown}
+              label="Recompensas"
+              description="Canjea tus puntos Trackly"
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base font-semibold">Tu progreso</CardTitle>
+            <CardDescription>Avanza al nivel {level + 1}. Siguiente objetivo: {nextLevelXP - currentXP} XP.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 px-4 py-4">
             <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-              <span>Progreso hacia nivel {level + 1}</span>
+              <span>Nivel actual: {level}</span>
+              <Badge variant="outline" className="gap-1">
+                <Flame className="h-3 w-3 text-primary" aria-hidden="true" />
+                Racha 5 días
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Progreso</span>
               <span>
                 {currentXP} / {nextLevelXP} XP
               </span>
             </div>
-            <Progress value={xpProgress} className="h-2 bg-muted" />
-          </div>
-        </div>
-      </header>
-
-      <Card>
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-base font-semibold">Acciones rápidas</CardTitle>
-          <p className="text-xs text-muted-foreground">
-            Completa misiones diarias, registra hotspots o comparte insights con tu comunidad.
-          </p>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <QuickAction
-            href="/trackly/misiones"
-            icon={Target}
-            label="Misiones activas"
-            description="Completa retos y gana XP"
-          />
-          <QuickAction
-            href="/trackly/mapa"
-            icon={MapPin}
-            label="Explorar mapa"
-            description="Nuevos hotspots en base a tus intereses"
-          />
-          <QuickAction
-            href="/trackly/comunidad"
-            icon={Users}
-            label="Comunidad"
-            description="Únete a la conversación local"
-          />
-          <QuickAction
-            href="/trackly/recompensas"
-            icon={Crown}
-            label="Recompensas"
-            description="Canjea tus puntos Trackly"
-          />
-        </CardContent>
-      </Card>
+            <Progress value={xpProgress} className="h-2" />
+            <div className="flex items-center justify-end">
+              <Button size="sm" variant="secondary" asChild className="gap-1">
+                <Link href="/trackly/recompensas">
+                  Explorar recompensas
+                  <Crown className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
@@ -230,9 +254,7 @@ export default function TracklyHomePage() {
                   <p className="text-sm font-semibold">{spot.name}</p>
                   <span className={cn("rounded-full px-3 py-1 text-xs", spot.color)}>{spot.status}</span>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Oportunidad proyectada
-                </div>
+                <div className="text-xs text-muted-foreground">Oportunidad proyectada</div>
                 <div className="flex items-end justify-between">
                   <span className="text-2xl font-semibold">{spot.impact}</span>
                   <Button variant="secondary" size="sm" asChild>
